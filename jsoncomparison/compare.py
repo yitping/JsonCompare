@@ -136,16 +136,27 @@ class Compare:
 
     def _need_compare_length(self):
         path = 'types.list.check_length'
+        return (
+            self._config.get(path) is True or self._need_compare_by_element()
+        )
+
+    def _need_compare_by_element(self):
+        path = 'types.list.by_element'
         return self._config.get(path) is True
 
     def _list_content_diff(self, e, a):
         d = {}
+        by_element = self._need_compare_by_element()
         for i, v in enumerate(e):
-            if v in a:
+            if not by_element and v in a:
                 continue
             t = type(v)
             if t in (int, str, bool, float):
-                d[i] = ValueNotFound(v, None).explain()
+                d[i] = (
+                    self._diff(v, a[i])
+                    if by_element
+                    else ValueNotFound(v, None).explain()
+                )
             elif t is dict:
                 d[i] = self._max_diff(v, a, self._dict_diff)
             elif t is list:

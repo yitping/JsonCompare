@@ -80,7 +80,6 @@ class CompareTestCase(unittest.TestCase):
             },
         )
 
-
     def test_list_compare(self):
         e = [1.23, 2, 'three', True]
         a = [1.23, 3, 'three', False, None]
@@ -95,6 +94,23 @@ class CompareTestCase(unittest.TestCase):
                 '_content': {
                     1: ValueNotFound(2, None).explain(),
                     3: ValueNotFound(True, None).explain(),
+                },
+            },
+        )
+
+    def test_numeric_list_compare(self):
+        e = [5.0, 5.5, 5.05, 5.005, 5.0005]
+        a = [5.0, 5.0, 5.0, 5.0, 5.0]
+
+        config = load_json('compare/config.json')
+        config["types"]["list"]["by_element"] = True
+
+        diff = Compare(config).check(e, a)
+        self.assertEqual(
+            diff, {
+                '_content': {
+                    1: ValuesNotEqual(5.5, 5.0).explain(),
+                    2: ValuesNotEqual(5.05, 5.0).explain(),
                 },
             },
         )
