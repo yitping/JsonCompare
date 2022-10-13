@@ -131,7 +131,9 @@ class Compare:
         d = {}
         if self._need_compare_length():
             d['_length'] = self._list_len_diff(e, a)
-        d['_content'] = self._list_content_diff(e, a)
+        by_element = self._need_compare_by_element()
+        if (by_element and d['_length'] == NO_DIFF) or (not by_element):
+            d['_content'] = self._list_content_diff(e, a)
         return self._without_empties(d)
 
     def _need_compare_length(self):

@@ -98,12 +98,12 @@ class CompareTestCase(unittest.TestCase):
             },
         )
 
-    def test_numeric_list_compare(self):
+    def test_numeric_same_len_list_compare(self):
         e = [5.0, 5.5, 5.05, 5.005, 5.0005]
         a = [5.0, 5.0, 5.0, 5.0, 5.0]
 
         config = load_json('compare/config.json')
-        config["types"]["list"]["by_element"] = True
+        config['types']['list']['by_element'] = True
 
         diff = Compare(config).check(e, a)
         self.assertEqual(
@@ -113,6 +113,19 @@ class CompareTestCase(unittest.TestCase):
                     2: ValuesNotEqual(5.05, 5.0).explain(),
                 },
             },
+        )
+
+    def test_numeric_diff_len_list_compare(self):
+        e = [5.0, 5.5, 5.05, 5.005, 5.0005, 5.0005]
+        a = [5.0, 5.0, 5.0, 5.0, 5.0]
+
+        config = load_json('compare/config.json')
+        config['types']['list']['by_element'] = True
+
+        diff = Compare(config).check(e, a)
+        self.assertEqual(
+            diff,
+            {'_length': LengthsNotEqual(len(e), len(a)).explain()},
         )
 
     def test_prepare_method(self):
